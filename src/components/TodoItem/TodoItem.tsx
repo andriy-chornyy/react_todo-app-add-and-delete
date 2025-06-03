@@ -7,11 +7,10 @@ import cn from 'classnames';
 
 type Props = {
   todo: Todo;
-  onDelete: (deleteId: number) => void;
 };
 
 export const TodoItem: React.FC<Props> = ({
-  todo: { title, completed, id }, onDelete
+  todo: { title, completed, id },
 }) => {
   return (
     <>
@@ -35,7 +34,7 @@ export const TodoItem: React.FC<Props> = ({
         </span>
 
         {/* Remove button appears only on hover */}
-        <button type="button" className="todo__remove" data-cy="TodoDelete" onClick={() => onDelete(id)}>
+        <button type="button" className="todo__remove" data-cy="TodoDelete">
           ×
         </button>
 

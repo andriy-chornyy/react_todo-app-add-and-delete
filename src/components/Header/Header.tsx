@@ -1,23 +1,32 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef, useEffect, useState} from 'react';
 
 type Props = {
-  onAddTodo: (title: string) => void;
+  handleAddTodo: (title: string) => void;
 }
 
-export const Header: React.FC<Props> = ({ onAddTodo }) => {
+export const Header: React.FC<Props> = ({handleAddTodo}) => {
   const titleField = useRef<HTMLInputElement>(null);
+  const [getTitle, setGetTitle] = useState('');
+
+  useEffect(() => {
+    if (titleField.current) {
+      titleField.current.focus()
+    }
+  }, []);
+
+  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   handleAddTodo(event.target.value);
+  // };
+
+  const handleChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setGetTitle(event.target.value);
+  };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (titleField.current) {
-      titleField.current.focus();
-
-      const title = titleField.current.value;
-
-      onAddTodo(title);
-    }
-  }
+    handleAddTodo(getTitle);
+  };
 
   return (
     <header className="todoapp__header">
@@ -32,6 +41,7 @@ export const Header: React.FC<Props> = ({ onAddTodo }) => {
       <form onSubmit={handleSubmit}>
         <input
           ref={titleField}
+          onChange={handleChangeTitle}
           data-cy="NewTodoField"
           type="text"
           className="todoapp__new-todo"

@@ -17,10 +17,8 @@ export const App: React.FC = () => {
   const [todosToDisplay, setTodosToDisplay] = useState<Todo[]>([]);
   const [selectedValue, setSelectedValue] = useState('All');
   const [isError, setIsError] = useState(false);
-  // const [deleteId , setDeleteId ] = useState<number | null>(null);
-  const [typeOfError, setTypeOfError] = useState('');
 
-  const [imputTitle, setInputTitle] = useState('');
+  // const [titleChange, setTitleChange] = useState('');
 
   useEffect(() => {
     client
@@ -34,34 +32,6 @@ export const App: React.FC = () => {
         }, 3000);
       });
   }, []);
-
-  const handleDelete = (id: number) => {
-    setAllTodos(todos => todos.filter(todo => todo.id !== id));
-
-    client.delete(`/todos/${id}`);
-  };
-
-  const handleTitleChange = (value: string) => {
-    setInputTitle(value);
-    console.log('value? value value', value);
-
-    if (value.trim() === '') {
-      setTypeOfError('empty Title');
-    }
-  };
-
-  const handleAddTodo = ({ title, userId, completed }: Omit<Todo, 'id'>) => {
-    const maxId = Math.max(0, ...allTodos.map(todo => todo.id));
-    const id = maxId + 1;
-
-    client
-      .post<Todo>('/todos', { title, userId, completed, id })
-      .then(newTodo => {
-        setAllTodos(current => [...current, newTodo]);
-        // setTodosToDisplay(current => [...current, newTodo]); .//////?????
-      });
-  };
-
 
   useEffect(() => {
     let viewList = allTodos;
@@ -81,14 +51,38 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
+  const onTitleChange = (title: string) => {
+    // console.log('onTitleChange called with:', title);
+    if (title.trim().length === 0) {
+      return;
+    }
+
+    // const maxId = Math.max(0, ...allTodos.map(todo => todo.id));
+
+    const userId = 2999;
+    let completed = false;
+    // const id = maxId + 1;
+
+    const titleTrim = title.trim();
+
+    client
+      .post<Todo>('/todos', { userId, title: titleTrim, completed})
+      .then(newTodo => {
+        console.log('New todo from server:', newTodo);
+        setAllTodos(prev => [...prev, newTodo]);
+      });
+  };
+
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
 
       <div className="todoapp__content">
-        <Header onAddTodo={handleAddTodo} />
+        <Header
+          handleAddTodo={onTitleChange}
+        />
 
-        <TodoList allTodos={todosToDisplay} onDelete={handleDelete} />
+        <TodoList allTodos={todosToDisplay} />
 
         {allTodos.length > 0 && (
           <Footer
@@ -99,7 +93,7 @@ export const App: React.FC = () => {
         )}
       </div>
 
-      <ErrorNotification isError={isError} typeOfError={typeOfError} />
+      <ErrorNotification isError={isError} />
     </div>
   );
 };

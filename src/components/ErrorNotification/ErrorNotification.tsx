@@ -4,7 +4,6 @@ import React from 'react';
 
 type Props = {
   isError: boolean;
-  typeOfError: string;
 }
 
 export const ErrorNotification: React.FC<Props> = ({isError}) => {
