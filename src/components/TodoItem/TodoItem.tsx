@@ -7,10 +7,11 @@ import cn from 'classnames';
 
 type Props = {
   todo: Todo;
+  handleDeleteTodo: (todoId: number) => void;
 };
 
 export const TodoItem: React.FC<Props> = ({
-  todo: { title, completed, id },
+  todo: { title, completed, id }, handleDeleteTodo
 }) => {
   console.log('idididididididididididididididid', id);
 
@@ -25,28 +26,33 @@ export const TodoItem: React.FC<Props> = ({
           <input
             data-cy="TodoStatus"
             type="checkbox"
-            className="todo__status"
+            className="todo__status loader"
             checked={completed}
           />
         </label>
 
-        <span data-cy="TodoTitle" className="todo__title">
+        <span data-cy="TodoTitle" className="todo__title ">
           {/* Completed Todo */}
           {title}
         </span>
         {/* Remove button appears only on hover */}
-        <button type="button" className="todo__remove" data-cy="TodoDelete">
+        <button
+          type="button"
+          className="todo__remove"
+          data-cy="TodoDelete"
+          onClick={() =>handleDeleteTodo(id)}
+        >
           ×
         </button>
 
         {/* overlay will cover the todo while it is being deleted or updated */}
 
-
-          <div data-cy="TodoLoader" className="modal overlay">
+        {id === 0 && (
+          <div data-cy="TodoLoader" className="modal overlay is-active">
             <div className="modal-background has-background-white-ter" />
             <div className="loader" />
           </div>
-
+        )}
       </div>
     </>
   );

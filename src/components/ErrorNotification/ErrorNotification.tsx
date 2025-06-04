@@ -19,8 +19,11 @@ export const ErrorNotification: React.FC<Props> = ({ isError }) => {
       >
         <button data-cy="HideErrorButton" type="button" className="delete" />
         {/* show only one message at a time */}
+        <br />
         Unable to load todos
-        {/* <br />
+        <br />
+        {/*
+        <br />
         Title should not be empty
         <br />
         Unable to add a todo

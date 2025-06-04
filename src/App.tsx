@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { getTodos, addTodo, USER_ID } from './api/todos';
+import { getTodos, addTodo, USER_ID, deleteTodo } from './api/todos';
 
 import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
@@ -68,11 +68,18 @@ export const App: React.FC = () => {
     setTempTodo(newTempTodo);
 
     addTodo(title).then(todoFromServer => {
-      setTempTodo(null);
       setAllTodos(prevTodos => [...prevTodos, todoFromServer]);
+      setTempTodo(null);
       setIsError(false);
     });
   };
+
+  const handleDeleteTodo = (todoId: number) => {
+    deleteTodo(todoId)
+    .then(() => {
+      setAllTodos(allTodos => allTodos.filter(todo => todo.id !== todoId));
+    });
+  }
 
   const handleError = (isError: boolean) => setIsError(isError);
   console.log('errorAnswer', isError);
@@ -89,7 +96,7 @@ export const App: React.FC = () => {
           isError={isError}
         />
 
-        <TodoList allTodos={todosToDisplay} tempTodo={tempTodo} />
+        <TodoList allTodos={todosToDisplay} tempTodo={tempTodo} handleDeleteTodo={handleDeleteTodo} />
 
         {allTodos.length > 0 && (
           <Footer
