@@ -2,9 +2,11 @@ import React, { useRef, useEffect, useState } from 'react';
 
 type Props = {
   handleAddTodo: (title: string) => void;
+  handleError: (errorAnswer: boolean) => void;
+  isError: boolean;
 };
 
-export const Header: React.FC<Props> = ({ handleAddTodo }) => {
+export const Header: React.FC<Props> = ({ handleAddTodo, handleError, isError}) => {
   const titleField = useRef<HTMLInputElement>(null);
   const [title, setTitle] = useState('');
 
@@ -14,14 +16,26 @@ export const Header: React.FC<Props> = ({ handleAddTodo }) => {
     }
   }, []);
 
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     if (title.trim().length === 0) {
+      handleError(true);
       return;
     }
 
-    handleAddTodo(title);
+    const normalizedTitle = title.trim();
+
+    handleAddTodo(normalizedTitle);
+
+    // if (isError !== true) {
+    //   setTitle('')
+    // }
+    if (normalizedTitle) {
+      setTitle('')
+      handleError(false)
+    }
   };
 
   return (

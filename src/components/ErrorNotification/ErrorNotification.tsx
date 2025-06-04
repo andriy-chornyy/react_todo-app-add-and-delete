@@ -28,6 +28,7 @@ export const ErrorNotification: React.FC<Props> = ({ isError }) => {
         Unable to delete a todo
         <br />
         Unable to update a todo */}
+
       </div>
     </>
   );

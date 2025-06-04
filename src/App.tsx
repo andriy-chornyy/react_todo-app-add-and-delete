@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { getTodos, addTodos, USER_ID } from './api/todos';
+import { getTodos, addTodo, USER_ID } from './api/todos';
 
 import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
@@ -17,11 +17,15 @@ export const App: React.FC = () => {
   const [allTodos, setAllTodos] = useState<Todo[]>([]);
   const [todosToDisplay, setTodosToDisplay] = useState<Todo[]>([]);
   const [selectedValue, setSelectedValue] = useState('All');
-  const [isError, setIsError] = useState(false);
 
   // const [title, setTitle] = useState('');
 
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+
+  const [isError, setIsError] = useState(false);
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
 
   useEffect(() => {
     getTodos()
@@ -54,16 +58,25 @@ export const App: React.FC = () => {
   }
 
   const handleAddTodo = (title: string) => {
-    const titleTrim = title.trim();
+    const newTempTodo = {
+      id: 0,
+      title: title,
+      completed: false,
+      userId: USER_ID,
+    }
 
-    setTodosToDisplay([...todosToDisplay, tempTodo]);
+    setTempTodo(newTempTodo);
 
-    addTodos(titleTrim)
-
-      .then(newTodo => {
-        setAllTodos(prev => [...prev, newTodo]);
-      });
+    addTodo(title).then(todoFromServer => {
+      setTempTodo(null);
+      setAllTodos(prevTodos => [...prevTodos, todoFromServer]);
+      setIsError(false);
+    });
   };
+
+  const handleError = (isError: boolean) => setIsError(isError);
+  console.log('errorAnswer', isError);
+
 
   return (
     <div className="todoapp">
@@ -72,9 +85,11 @@ export const App: React.FC = () => {
       <div className="todoapp__content">
         <Header
           handleAddTodo={handleAddTodo}
+          handleError={handleError}
+          isError={isError}
         />
 
-        <TodoList allTodos={todosToDisplay} />
+        <TodoList allTodos={todosToDisplay} tempTodo={tempTodo} />
 
         {allTodos.length > 0 && (
           <Footer
