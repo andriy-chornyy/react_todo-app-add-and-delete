@@ -8,10 +8,13 @@ import cn from 'classnames';
 type Props = {
   todo: Todo;
   handleDeleteTodo: (todoId: number) => void;
+  deletingTodoId: number | null;
 };
 
 export const TodoItem: React.FC<Props> = ({
-  todo: { title, completed, id }, handleDeleteTodo
+  todo: { title, completed, id },
+  handleDeleteTodo,
+  deletingTodoId,
 }) => {
   console.log('idididididididididididididididid', id);
 
@@ -47,12 +50,16 @@ export const TodoItem: React.FC<Props> = ({
 
         {/* overlay will cover the todo while it is being deleted or updated */}
 
-        {id === 0 && (
-          <div data-cy="TodoLoader" className="modal overlay is-active">
-            <div className="modal-background has-background-white-ter" />
-            <div className="loader" />
-          </div>
-        )}
+        <div
+          data-cy="TodoLoader"
+          className={cn("modal overlay", {
+            'is-active': (id === 0 || id === deletingTodoId)
+          })}
+          >
+          <div className="modal-background has-background-white-ter" />
+          <div className="loader" />
+        </div>
+
       </div>
     </>
   );

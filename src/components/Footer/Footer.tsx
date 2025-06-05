@@ -1,17 +1,22 @@
 import React from 'react';
 import { Todo } from '../../types/Todo';
 import cn from 'classnames';
+import { deleteAllCompletedTodos } from '../../api/todos';
 
 type Props = {
   allTodos: Todo[];
   selectedValue: (value: string) => void;
   onSelect: string;
+  // handleDeleteCompleted: (arrTodo: Todo[]) => void;
+  // handleDeleteCompleted: () => void;
+  handleDeleteCompleted,
 };
 
 export const Footer: React.FC<Props> = ({
   allTodos,
   selectedValue,
   onSelect,
+  handleDeleteCompleted,
 }) => {
   function notCompletedTodo() {
     return allTodos.filter(todo => todo.completed === false).length;
@@ -62,6 +67,7 @@ export const Footer: React.FC<Props> = ({
           type="button"
           className="todoapp__clear-completed"
           data-cy="ClearCompletedButton"
+          onClick={handleDeleteCompleted}
         >
           Clear completed
         </button>

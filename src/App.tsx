@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
 import { UserWarning } from './UserWarning';
-import { getTodos, addTodo, USER_ID, deleteTodo } from './api/todos';
+import { getTodos, addTodo, USER_ID, deleteTodo, deleteAllCompletedTodos } from './api/todos';
 
 import { Header } from './components/Header/Header';
 import { TodoList } from './components/TodoList/TodoList';
@@ -25,6 +25,7 @@ export const App: React.FC = () => {
   const [isError, setIsError] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [deletingTodoId, setDeletingTodoId] = useState<number | null>(null);
 
 
   useEffect(() => {
@@ -75,14 +76,40 @@ export const App: React.FC = () => {
   };
 
   const handleDeleteTodo = (todoId: number) => {
+    setDeletingTodoId(todoId);
+
     deleteTodo(todoId)
-    .then(() => {
-      setAllTodos(allTodos => allTodos.filter(todo => todo.id !== todoId));
-    });
+      .then(() => {
+        setAllTodos(allTodos => allTodos.filter(todo => todo.id !== todoId));
+      })
+      .finally(() => {
+        setDeletingTodoId(null)
+      });
   }
+
 
   const handleError = (isError: boolean) => setIsError(isError);
   console.log('errorAnswer', isError);
+
+
+
+
+
+  const handleDeleteCompleted = async () => {
+    const [completedTodos, allTodos] = await Promise.all([
+      deleteAllCompletedTodos(),
+      getTodos(),
+    ])
+    const completedIds = completedTodos.map(todo => todo.id);
+
+    for (let id of completedIds) {
+      handleDeleteTodo(id)
+    }
+
+    // setAllTodos(allTodos.filter(todo => !completedIds.includes(todo.id)));
+
+    // console.log('completedTodos completedTodos', completedTodos, allTodos);
+  };
 
 
   return (
@@ -96,13 +123,19 @@ export const App: React.FC = () => {
           isError={isError}
         />
 
-        <TodoList allTodos={todosToDisplay} tempTodo={tempTodo} handleDeleteTodo={handleDeleteTodo} />
+        <TodoList
+          allTodos={todosToDisplay}
+          tempTodo={tempTodo}
+          handleDeleteTodo={handleDeleteTodo}
+          deletingTodoId={deletingTodoId}
+        />
 
         {allTodos.length > 0 && (
           <Footer
             allTodos={allTodos}
             selectedValue={(value: string) => setSelectedValue(value)}
             onSelect={selectedValue}
+            handleDeleteCompleted={handleDeleteCompleted}
           />
         )}
       </div>
@@ -111,3 +144,5 @@ export const App: React.FC = () => {
     </div>
   );
 };
+
+// console.log('client.get<Todo[]>(`/todos?userId=${USER_ID}&completed=true`)',client.get<Todo[]>(`/todos?userId=${USER_ID}&completed=true`));
