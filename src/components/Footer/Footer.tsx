@@ -1,15 +1,14 @@
 import React from 'react';
 import { Todo } from '../../types/Todo';
 import cn from 'classnames';
-import { deleteAllCompletedTodos } from '../../api/todos';
 
 type Props = {
   allTodos: Todo[];
-  selectedValue: (value: string) => void;
-  onSelect: string;
-  // handleDeleteCompleted: (arrTodo: Todo[]) => void;
-  // handleDeleteCompleted: () => void;
-  handleDeleteCompleted,
+  selectedValue: (value: string) => void,
+  onSelect: string,
+  handleDeleteCompleted: () => void,
+
+  focusAfterDelete: (hasFocus: boolean) => void;
 };
 
 export const Footer: React.FC<Props> = ({
@@ -17,10 +16,14 @@ export const Footer: React.FC<Props> = ({
   selectedValue,
   onSelect,
   handleDeleteCompleted,
+  focusAfterDelete,
 }) => {
   function notCompletedTodo() {
+
     return allTodos.filter(todo => todo.completed === false).length;
   }
+
+
 
   return (
     <>
@@ -37,7 +40,7 @@ export const Footer: React.FC<Props> = ({
             className={cn('filter__link', { selected: onSelect === 'All' })}
             data-cy="FilterLinkAll"
             onClick={() => selectedValue('All')}
-          >
+            >
             All
           </a>
 
@@ -67,7 +70,7 @@ export const Footer: React.FC<Props> = ({
           type="button"
           className="todoapp__clear-completed"
           data-cy="ClearCompletedButton"
-          onClick={handleDeleteCompleted}
+          onClick={() => { handleDeleteCompleted; focusAfterDelete(true) }}
         >
           Clear completed
         </button>

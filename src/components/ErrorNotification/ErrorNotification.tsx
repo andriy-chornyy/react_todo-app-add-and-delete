@@ -1,11 +1,12 @@
 import cn from 'classnames';
 import React from 'react';
+import { ErrorType } from '../../types/ErrorType';
 
 type Props = {
-  isError: boolean;
+  error: ErrorType | null;
 };
 
-export const ErrorNotification: React.FC<Props> = ({ isError }) => {
+export const ErrorNotification: React.FC<Props> = ({ error }) => {
   return (
     <>
       {/* DON'T use conditional rendering to hide the notification */}
@@ -14,24 +15,15 @@ export const ErrorNotification: React.FC<Props> = ({ isError }) => {
         data-cy="ErrorNotification"
         className={cn(
           'notification is-danger is-light has-text-weight-normal',
-          { hidden: !isError },
+          { hidden: !error },
         )}
       >
-        <button data-cy="HideErrorButton" type="button" className="delete" />
-        {/* show only one message at a time */}
-        <br />
-        Unable to load todos
-        <br />
-        {/*
-        <br />
-        Title should not be empty
-        <br />
-        Unable to add a todo
-        <br />
-        Unable to delete a todo
-        <br />
-        Unable to update a todo */}
-
+        <button
+          data-cy="HideErrorButton"
+          type="button"
+          className="delete"
+        />
+          {error}
       </div>
     </>
   );
