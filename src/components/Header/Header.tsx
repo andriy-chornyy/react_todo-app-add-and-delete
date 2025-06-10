@@ -27,7 +27,7 @@ export const Header: React.FC<Props> = ({
     if (!tempTodo && inputRef && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [tempTodo]);
+  }, [tempTodo, inputRef]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

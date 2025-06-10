@@ -10,16 +10,20 @@ import { Footer } from './components/Footer/Footer';
 import { ErrorNotification } from './components/ErrorNotification';
 
 import { Todo } from './types/Todo';
+import { FilterStatus } from './types/enums';
 import { ErrorType } from './types/ErrorType';
 
 export const App: React.FC = () => {
   const [allTodos, setAllTodos] = useState<Todo[]>([]);
   const [todosToDisplay, setTodosToDisplay] = useState<Todo[]>([]);
-  const [selectedValue, setSelectedValue] = useState('All');
+
+  const [selectedValue, setSelectedValue] = useState<FilterStatus>(FilterStatus.All);
+
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [isError, setIsError] = useState<ErrorType | null>(null);
   const [deletingTodoId, setDeletingTodoId] = useState<number | null>(null);
   const [title, setTitle] = useState('');
+
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -51,11 +55,11 @@ export const App: React.FC = () => {
   useEffect(() => {
     let viewList = allTodos;
 
-    if (selectedValue === 'Active') {
+    if (selectedValue === FilterStatus.Active) {
       viewList = viewList.filter(todo => !todo.completed);
     }
 
-    if (selectedValue === 'Completed') {
+    if (selectedValue === FilterStatus.Completed) {
       viewList = viewList.filter(todo => todo.completed);
     }
 
@@ -96,9 +100,9 @@ export const App: React.FC = () => {
     setDeletingTodoId(todoId);
 
     deleteTodo(todoId)
-    .then(() => {
-      setAllTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
-    })
+      .then(() => {
+        setAllTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
+      })
       .catch(() => {
         setIsError('Unable to delete a todo');
       })
@@ -143,7 +147,7 @@ export const App: React.FC = () => {
         {allTodos.length > 0 && (
           <Footer
             allTodos={allTodos}
-            selectedValue={value => setSelectedValue(value)}
+            selectedValue={(value: FilterStatus) => setSelectedValue(value)}
             onSelect={selectedValue}
             handleDeleteCompleted={handleDeleteCompleted}
           />
