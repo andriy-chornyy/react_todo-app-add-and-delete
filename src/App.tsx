@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { UserWarning } from './UserWarning';
 import { getTodos, addTodo, USER_ID, deleteTodo } from './api/todos';
 
@@ -20,9 +20,13 @@ export const App: React.FC = () => {
   const [isError, setIsError] = useState<ErrorType | null>(null);
   const [deletingTodoId, setDeletingTodoId] = useState<number | null>(null);
   const [title, setTitle] = useState('');
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
-
-  const [hasFocus, setHasFocus] = useState(false);
+  useEffect(() => {
+    if (inputRef) {
+      inputRef.current?.focus();
+    }
+  }, [inputRef]);
 
   useEffect(() => {
     getTodos()
@@ -62,17 +66,17 @@ export const App: React.FC = () => {
     return <UserWarning />;
   }
 
-  const handleAddTodo = (title: string) => {
+  const handleAddTodo = (newTitle: string) => {
     const newTempTodo: Todo = {
       id: 0,
-      title,
+      title: newTitle,
       completed: false,
       userId: USER_ID,
     };
 
     setTempTodo(newTempTodo);
 
-    addTodo(title)
+    addTodo(newTitle)
       .then(todoFromServer => {
         setAllTodos(prevTodos => [...prevTodos, todoFromServer]);
         setTempTodo(null);
@@ -82,6 +86,9 @@ export const App: React.FC = () => {
       .catch(() => {
         setIsError('Unable to add a todo');
         setTempTodo(null);
+      })
+      .finally(() => {
+        inputRef.current?.focus();
       });
   };
 
@@ -89,12 +96,15 @@ export const App: React.FC = () => {
     setDeletingTodoId(todoId);
 
     deleteTodo(todoId)
-      .then(() => {
-        setAllTodos(allTodos => allTodos.filter(todo => todo.id !== todoId));
+    .then(() => {
+      setAllTodos(prevTodos => prevTodos.filter(todo => todo.id !== todoId));
+    })
+      .catch(() => {
+        setIsError('Unable to delete a todo');
       })
       .finally(() => {
         setDeletingTodoId(null);
-
+        inputRef.current?.focus();
       });
   };
 
@@ -104,6 +114,7 @@ export const App: React.FC = () => {
 
   const handleDeleteCompleted = () => {
     const completedTodos = allTodos.filter(todo => todo.completed);
+
     completedTodos.map(todo => handleDeleteTodo(todo.id));
   };
 
@@ -119,6 +130,7 @@ export const App: React.FC = () => {
           tempTodo={tempTodo}
           title={title}
           onTitleChange={setTitle}
+          inputRef={inputRef}
         />
 
         <TodoList
@@ -134,7 +146,6 @@ export const App: React.FC = () => {
             selectedValue={value => setSelectedValue(value)}
             onSelect={selectedValue}
             handleDeleteCompleted={handleDeleteCompleted}
-            focusAfterDelete={setHasFocus}
           />
         )}
       </div>

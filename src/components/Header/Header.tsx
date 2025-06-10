@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { ErrorType } from '../../types/ErrorType';
 import { Todo } from '../../types/Todo';
 
@@ -9,21 +9,23 @@ type Props = {
   tempTodo: Todo | null;
   title: string;
   onTitleChange: (value: string) => void;
+
+  inputRef: React.RefObject<HTMLInputElement> | null;
 };
 
 export const Header: React.FC<Props> = ({
   handleAddTodo,
   handleError,
-  error,
+  // error,
   tempTodo,
   title,
   onTitleChange,
-}) => {
-  const titleField = useRef<HTMLInputElement>(null);
 
+  inputRef,
+}) => {
   useEffect(() => {
-    if (!tempTodo && titleField.current) {
-      titleField.current.focus();
+    if (!tempTodo && inputRef && inputRef.current) {
+      inputRef.current.focus();
     }
   }, [tempTodo]);
 
@@ -32,6 +34,7 @@ export const Header: React.FC<Props> = ({
 
     if (title.trim().length === 0) {
       handleError('Title should not be empty');
+
       return;
     }
 
@@ -48,7 +51,7 @@ export const Header: React.FC<Props> = ({
 
       <form onSubmit={handleSubmit}>
         <input
-          ref={titleField}
+          ref={inputRef}
           value={title}
           onChange={event => onTitleChange(event.target.value)}
           data-cy="NewTodoField"

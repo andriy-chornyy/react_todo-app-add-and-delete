@@ -4,11 +4,9 @@ import cn from 'classnames';
 
 type Props = {
   allTodos: Todo[];
-  selectedValue: (value: string) => void,
-  onSelect: string,
-  handleDeleteCompleted: () => void,
-
-  focusAfterDelete: (hasFocus: boolean) => void;
+  selectedValue: (value: string) => void;
+  onSelect: string;
+  handleDeleteCompleted: () => void;
 };
 
 export const Footer: React.FC<Props> = ({
@@ -16,14 +14,13 @@ export const Footer: React.FC<Props> = ({
   selectedValue,
   onSelect,
   handleDeleteCompleted,
-  focusAfterDelete,
 }) => {
-  function notCompletedTodo() {
+  const completedTodosLength = allTodos.filter(todo => todo.completed).length;
+  const isHidden = completedTodosLength === 0;
 
+  function notCompletedTodo() {
     return allTodos.filter(todo => todo.completed === false).length;
   }
-
-
 
   return (
     <>
@@ -40,7 +37,7 @@ export const Footer: React.FC<Props> = ({
             className={cn('filter__link', { selected: onSelect === 'All' })}
             data-cy="FilterLinkAll"
             onClick={() => selectedValue('All')}
-            >
+          >
             All
           </a>
 
@@ -70,7 +67,8 @@ export const Footer: React.FC<Props> = ({
           type="button"
           className="todoapp__clear-completed"
           data-cy="ClearCompletedButton"
-          onClick={() => { handleDeleteCompleted; focusAfterDelete(true) }}
+          onClick={handleDeleteCompleted}
+          disabled={isHidden}
         >
           Clear completed
         </button>
